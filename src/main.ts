@@ -8,7 +8,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
-      transform: true,
+      transform: true, // controller에서 타입을 내가 원하는 것으로 바꿔줌
     }),
   );
   await app.listen(3000);
