@@ -18,16 +18,15 @@ describe('MoviesService', () => {
     expect(service).toBeDefined();
   });
 
-  describe("getAll", () => {
+  describe('getAll', () => {
     it('should return an array', () => {
-
       const result = service.getAll();
 
       expect(result).toBeInstanceOf(Array);
     });
   });
 
-  describe("getOne", () => {
+  describe('getOne', () => {
     it('should return a movie', () => {
       service.create({
         title: 'Test Movie',
@@ -40,11 +39,69 @@ describe('MoviesService', () => {
       expect(movie.id).toEqual(1);
     });
     it('should throw 404 error', () => {
-      try{
+      try {
         service.getOne(999);
-      }catch(e){
+      } catch (e) {
         expect(e).toBeInstanceOf(NotFoundException);
         expect(e.message).toEqual('Movie with ID 999: Not found.');
+      }
+    });
+  });
+
+  describe('deletOne', () => {
+    it('delete a movie', () => {
+      service.create({
+        title: 'Test Movie',
+        genres: ['test'],
+        year: 2000,
+      });
+      const allMovies = service.getAll().length;
+      service.deleteOne(1);
+      const afterDelete = service.getAll().length;
+
+      expect(afterDelete).toBeLessThan(allMovies);
+    });
+
+    it('should return a 404', () => {
+      try {
+        service.deleteOne(999);
+      } catch (e) {
+        expect(e).toBeInstanceOf(NotFoundException);
+        expect(e.message).toEqual('Movie with ID 999: Not found.');
+      }
+    });
+  });
+
+  describe('create', () => {
+    it('should create a movie', () => {
+      const beforeCreate = service.getAll().length;
+      service.create({
+        title: 'Test Movie',
+        genres: ['test'],
+        year: 2000,
+      });
+      const afterCreate = service.getAll().length;
+      console.log(beforeCreate, afterCreate);
+      expect(afterCreate).toBeGreaterThan(beforeCreate);
+    });
+  });
+
+  describe('update', () => {
+    it('should update a movie', () => {
+      service.create({
+        title: 'Test Movie',
+        genres: ['test'],
+        year: 2000,
+      });
+      service.update(1, { title: 'Update Test' });
+      const movie = service.getOne(1);
+      expect(movie.title).toEqual('Update Test');
+    });
+    it('should throw a NotFoundExeption', () => {
+      try {
+        service.update(999, {});
+      } catch (e) {
+        expect(e).toBeInstanceOf(NotFoundException);
       }
     });
   });
